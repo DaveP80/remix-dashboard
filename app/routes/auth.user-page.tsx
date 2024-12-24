@@ -1,15 +1,18 @@
-import { redirect } from "@remix-run/react";
-import { useContext } from "react";
-import { GlobalContext } from "~/root";
-import { UserContextType } from "~/types/types";
+import { useProtectedRoute } from "~/hooks/protected-route";
 
 export default function UserPage() {
-    const User = useContext<UserContextType | undefined>(GlobalContext);
-    
-    if (User?.user?.name == null) redirect("/auth")
-        return (
-    <div>
-                <div className="div">Welcome back {User?.user?.name}</div>
-    </div>
-  );
+  const { isAuthenticated, user } = useProtectedRoute();
+
+  if (!isAuthenticated) {
+    return <div>Redirecting...</div>;
+  } else {
+
+    return (
+      <div>
+        <div className="text-xl font-bold">Welcome back {user?.name}</div>
+      </div>
+    );
+
+  }
+
 }

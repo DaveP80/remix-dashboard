@@ -3,8 +3,8 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { supabase } from "~/utils/supabase.server";
 import { useActionData } from "@remix-run/react";
 import { useContext } from "react";
-import { GlobalContext } from "~/root";
 import { UserContextType } from "~/types/types";
+import { GlobalContext } from "~/context/globalcontext";
 
 type ActionData = {
     error?: any;

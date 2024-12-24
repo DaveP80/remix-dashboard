@@ -1,6 +1,5 @@
 import { useFetcher } from "@remix-run/react";
-import { useTransition } from "react";
-import { Fetcher, LoaderFunction, useLoaderData } from "react-router";
+import { Fetcher, useLoaderData } from "react-router";
 export async function loader(): Promise<any> {
   // Simulate fetching data with a delay
   const mockData = new Promise((resolve) => {

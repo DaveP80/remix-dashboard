@@ -9,8 +9,7 @@ import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
 import { Layout } from "./components/layout";
-import React, { createContext, useState } from "react";
-import { User, UserContextType } from "./types/types";
+import GlobalContextProvider from "./context/globalcontext";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,11 +23,9 @@ export const links: LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
-export const GlobalContext = createContext<UserContextType | undefined>(undefined);
 
 export default function App() {
-  const [user, setUser] = useState<User>(null);
-  const clearUser = () => setUser({name: null});
+
   return (
     <html lang="en">
     <head>
@@ -38,11 +35,11 @@ export default function App() {
       <Links />
     </head>
     <body className="flex-col">
-      <GlobalContext.Provider value={{user, setUser, clearUser }} >
+      <GlobalContextProvider>
       <Layout>
       <Outlet/>
       </Layout>
-      </GlobalContext.Provider>
+      </GlobalContextProvider>
       <ScrollRestoration />
       <Scripts />
     </body>

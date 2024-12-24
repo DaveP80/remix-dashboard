@@ -2,9 +2,9 @@ import AuthForm from "~/components/AuthForm";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { supabase } from "~/utils/supabase.server";
 import { useActionData } from "@remix-run/react";
-import {GlobalContext} from "~/root";
 import { useContext } from "react";
 import { UserContextType } from "~/types/types";
+import { GlobalContext } from "~/context/globalcontext";
 
 type ActionData = {
   error?: any;
@@ -16,11 +16,11 @@ export async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
     const name = formData.get("name");
     try {
-        const { data } = await supabase
+        await supabase
         .from("users")
         .insert([{ name }])
         .throwOnError();
-        return Response.json({ message: "successful added", user: name?.toString() });
+        return Response.json({ message: "successful added", user: name?.toString().trim() });
     } catch (error) {
         return Response.json({ error, message: "supabase error" });
     }
