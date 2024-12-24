@@ -9,6 +9,6 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-<div className="flex-grow min-h-screen justify-center p-4 bg-gray-200">Hello world</div>
+<div className="flex-grow min-h-screen justify-center p-4 bg-gray-200 text-black">Hello world</div>
   );
 }

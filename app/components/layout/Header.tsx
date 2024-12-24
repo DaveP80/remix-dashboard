@@ -20,7 +20,7 @@ const headers: any[] = [
         name: "test"
     }
 ]
-return <div className="flex-grow p-4 bg-amber-200">
+return <div className="flex-grow p-4 bg-blue-900">
     <ul className="">
         {
             headers.map((item, idx) => {
