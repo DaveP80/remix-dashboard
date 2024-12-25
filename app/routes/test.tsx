@@ -1,6 +1,7 @@
 import { Await } from "@remix-run/react";
 import { Suspense } from "react";
 import { useLoaderData } from "react-router";
+import { Button } from "~/components/ui/button";
 // Define the shape of the resolved data
 interface MockDataType {
   message: string;
@@ -30,7 +31,11 @@ export default function Test(): React.ReactNode {
 
   return (
     <>
-      <div className="div">Thanks for waiting for a server response</div>
+      <div className="flex-col justify-items-center">
+        <div className="p">Thanks for waiting for a server response</div>
+
+        <Button>Test Btn</Button>
+      </div>
 
       <Suspense
         fallback={
