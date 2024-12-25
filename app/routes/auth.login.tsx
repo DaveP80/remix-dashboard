@@ -31,13 +31,14 @@ export default function Login() {
   const LoginContext = useContext<UserContextType | undefined>(GlobalContext);
   const LoginAction = useActionData<ActionData | typeof action>();
 
-  useEffect(() => {
+  useEffect((): ReturnType<any> => {
     if (LoginAction?.dataPromise) {
       LoginAction?.dataPromise.then((res: SupaResults ) => {
         res?.data[0].name && LoginContext?.setUser({ name: res.data[0].name });
       });
     }
-  }, []);
+    return () => true;
+  }, [LoginAction]);
 
   return (
     <main className="flex-grow min-h-screen bg-slate-500">
