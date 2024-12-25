@@ -25,10 +25,8 @@ export async function loader(): Promise<LoaderData> {
 }
 
 export default function Test(): React.ReactNode {
-  //const mockData: LoaderData | unknown = useLoaderData();
   //@ts-expect-error
   const { mockData } = useLoaderData<typeof loader>();
-  console.log("this ran on client side");
 
   return (
     <>
