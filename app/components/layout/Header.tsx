@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { ModeToggle } from "../mode-toggle"
 
 export function Header(): React.ReactNode {
     
@@ -20,7 +21,7 @@ const headers: any[] = [
         name: "test"
     }
 ]
-return <div className="flex-grow p-4 bg-blue-900">
+return <div className="flex-grow p-4 bg-green-200 text-gray-900 dark:bg-gray-800 dark:text-gray-100">
     <ul className="">
         {
             headers.map((item, idx) => {
@@ -31,6 +32,7 @@ return <div className="flex-grow p-4 bg-blue-900">
                 )
             })
         }
+        <ModeToggle/>
     </ul>
 
 

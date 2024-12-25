@@ -6,12 +6,10 @@ import { Button } from "~/components/ui/button";
 interface MockDataType {
   message: string;
 }
-
 // Define the shape of the loader return type
 interface LoaderData {
   mockData: Promise<MockDataType>;
 }
-
 // Add the return type annotation to the loader
 export async function loader(): Promise<LoaderData> {
   const mockData = new Promise<MockDataType>((resolve) => {
@@ -32,7 +30,7 @@ export default function Test(): React.ReactNode {
   return (
     <>
       <div className="flex-col justify-items-center">
-        <div className="p">Thanks for waiting for a server response</div>
+        <p className="">Thanks for waiting for a server response</p>
 
         <Button>Test Btn</Button>
       </div>

@@ -7,7 +7,7 @@ export default function Index() {
   const AuthContext = useContext(GlobalContext);
   return (
     <div className="flex-col min-h-screen p-2">
-      <div className="h3">{AuthContext?.user ? `you are logged in: ${AuthContext?.user.name}` : `Enter your name and sign up or login`}</div>
+      <div className="">{AuthContext?.user ? `you are logged in: ${AuthContext?.user.name}` : `Enter your name and sign up or login`}</div>
       <aside className="flex flex-col space-y-4">
         {AuthContext?.user ? <>
           <Link to="/auth/user-page" className="text-blue-600 hover:text-blue-800">

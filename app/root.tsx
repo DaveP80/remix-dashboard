@@ -4,12 +4,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 
 import "./tailwind.css";
 import { Layout } from "./components/layout";
 import GlobalContextProvider from "./context/globalcontext";
+import clsx from "clsx";
+import {
+  PreventFlashOnWrongTheme,
+  ThemeProvider,
+  useTheme,
+} from "remix-themes";
+import { themeSessionResolver } from "./sessions.server";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,25 +36,48 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export default function App() {
+export const meta: MetaFunction = () => {
+  return [{ title: "Learn Remix" }, { name: "project", content: "remix page" }];
+};
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { getTheme } = await themeSessionResolver(request);
+  return {
+    theme: getTheme(),
+  };
+}
+
+export default function AppWithProviders() {
+  const data = useLoaderData<typeof loader>();
+  return (
+    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+      <App />
+    </ThemeProvider>
+  );
+}
+
+export function App() {
+  const data = useLoaderData<typeof loader>();
+  const [theme] = useTheme();
 
   return (
-    <html lang="en">
-    <head>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <Meta />
-      <Links />
-    </head>
-    <body className="flex-col">
-      <GlobalContextProvider>
-      <Layout>
-      <Outlet/>
-      </Layout>
-      </GlobalContextProvider>
-      <ScrollRestoration />
-      <Scripts />
-    </body>
-  </html>
-);
+    <html lang="en" className={clsx(theme)}>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
+        <Links />
+      </head>
+      <body className="flex-col">
+        <GlobalContextProvider>
+          <Layout>
+            <Outlet />
+          </Layout>
+        </GlobalContextProvider>
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
 }
