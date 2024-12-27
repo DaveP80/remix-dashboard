@@ -1,58 +1,66 @@
-export const chartData: {month: string, desktop: number, mobile: number}[] = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
-  ]
+interface DynamicArrayObject {
+  [key: string]: Array<any>; // For any type of array
+}
 
-  interface DynamicArrayObject {
-    [key: string]: Array<any>; // For any type of array
-  }
+interface TransformArrayObject {
+  [key: string]: string | number; // For any type of array
+}
 
-  interface TransformArrayObject {
-    [key: string]: string | number; // For any type of array
-  }
+export const unixStart = "1727755200";
+export const unixStop = "1729828800";
 
-
-export function transformData(args: DynamicArrayObject): TransformArrayObject[] {
-    const initData = args.prices.slice(0,10);
-    const finalArr: TransformArrayObject[] = [];
-
-    let l = initData.length;
-    for (let i = 0; i<l; i++) {
-        let storObj: TransformArrayObject = {};
-        let day = (i+1).toString();
-        let marketcap = initData[i][0];
-        let btcprice = initData[i][1];
-        storObj["day"] = day;
-        storObj["marketcap"] = +marketcap.toFixed();
-        storObj["btcprice"] = +btcprice.toFixed();
-        finalArr.push(storObj);
+export function transformData(
+  args: DynamicArrayObject
+): TransformArrayObject[] {
+  const initData = args.prices;
+  const finalArr: TransformArrayObject[] = [];
+  //find highest price in every 24 part window. if remaining window is less
+  //then the length of 24, find the highest in what is remaining.
+  let l = initData.length;
+  let max_p = Number.MIN_SAFE_INTEGER;
+  let inner_c = 0;
+  let day = 0;
+  let storObj: TransformArrayObject = {};
+  let flag = false;
+  for (let i = 0; i < l; i++) {
+    if (l - i < 24) {
+      flag = true;
     }
-    console.log(finalArr)
-    return finalArr.slice(0,6);
+    if (initData[i][1] > max_p) {
+      max_p = initData[i][1];
+    }
+    if (inner_c == 24 || (flag && i == l - 1)) {
+      storObj["day"] = (day + 1).toString();
+      storObj["btcprice"] = +max_p.toFixed();
+      finalArr.push(storObj);
+      day++;
+      inner_c = 0;
+      storObj = {};
+      max_p = Number.MIN_SAFE_INTEGER;
+      continue;
+    }
+    inner_c++;
+  }
+  return finalArr;
 }
 
 export async function fetchBitcoinData(environ: string | undefined) {
-    const options: {[key: string]: any} = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        "x-cg-demo-api-key": environ,
-      },
-    };
-  
-    try {
-      const response = await fetch(
-        "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=1727763018&to=1729059018",
-        options
-      );
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching Bitcoin data:", error);
-      return null;
-    }
+  const options: { [key: string]: any } = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "x-cg-demo-api-key": environ,
+    },
+  };
+
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${unixStart}&to=${unixStop}&precision=0`,
+      options
+    );
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching Bitcoin data:", error);
+    return null;
   }
-  
+}

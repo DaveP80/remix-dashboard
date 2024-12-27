@@ -12,7 +12,7 @@ type ActionData = {
 };
 
 type SupaResults = {
-    data: { name: string}[] ;
+  data: { name: string }[];
 };
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -32,9 +32,10 @@ export default function Login() {
   const LoginAction = useActionData<ActionData | typeof action>();
 
   useEffect((): ReturnType<any> => {
-    if (LoginAction?.dataPromise) {
-      LoginAction?.dataPromise.then((res: SupaResults ) => {
-        res?.data[0].name && LoginContext?.setUser({ name: res.data[0].name });
+    if (LoginAction?.dataPromise !== null) {
+      LoginAction?.dataPromise.then((res: SupaResults) => {
+        res?.data[0]?.name &&
+          LoginContext?.setUser({ name: res?.data[0].name });
       });
     }
     return () => true;
@@ -51,11 +52,13 @@ export default function Login() {
       >
         <Await resolve={LoginAction?.dataPromise}>
           {(response) => {
-            const res = response?.data[0]?.name;
+            const res = response?.data ? response.data[0]?.name : null;
             if (res) {
               return <>{`welcome ${res} you are logged in.`}</>;
             } else if (!LoginAction) return "";
-            else return "user not found, perhaps sign up";
+            else if (response?.data && response?.data.length == 0)
+              return "user not found, perhaps sign up";
+            else return "sorry, server error";
           }}
         </Await>
       </React.Suspense>
