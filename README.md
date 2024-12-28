@@ -46,4 +46,4 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 
 ## Crypto Price Data/Api
 
-Data and API calls go to the coingecko API, developer API module.
+Data and API calls go to the coingecko API, developer API module -> Coin Historical Chart Data within Time Range by ID.

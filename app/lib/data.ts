@@ -1,3 +1,5 @@
+import { DateRange } from "react-day-picker";
+
 interface DynamicArrayObject {
   [key: string]: Array<any>; // For any type of array
 }
@@ -6,8 +8,8 @@ interface TransformArrayObject {
   [key: string]: string | number; // For any type of array
 }
 
-export const unixStart = "1727755200";
-export const unixStop = "1729828800";
+let unixStart: any = "1727755200";
+let unixStop: any = "1729828800";
 
 export function transformData(
   args: DynamicArrayObject
@@ -44,7 +46,11 @@ export function transformData(
   return finalArr;
 }
 
-export async function fetchBitcoinData(environ: string | undefined, value: string) {
+export async function fetchBitcoinData(
+  environ: string | undefined,
+  value: string,
+  date_picker: DateRange | undefined
+) {
   const options: { [key: string]: any } = {
     method: "GET",
     headers: {
@@ -52,6 +58,15 @@ export async function fetchBitcoinData(environ: string | undefined, value: strin
       "x-cg-demo-api-key": environ,
     },
   };
+
+  if (date_picker) {
+    unixStart = date_picker?.from
+      ? Math.floor(date_picker.from?.getTime() / 1000).toString()
+      : unixStart;
+    unixStop = date_picker?.to
+      ? Math.floor(date_picker.to?.getTime() / 1000).toString()
+      : unixStop;
+  }
 
   try {
     const response = await fetch(
@@ -63,4 +78,15 @@ export async function fetchBitcoinData(environ: string | undefined, value: strin
     console.error("Error fetching Bitcoin data:", error);
     return null;
   }
+}
+
+export function isUSLocaleFormat(dateString: string): string {
+  // Matches format: "M/D/YYYY, HH:MM:SS AM/PM"
+  const usLocalePattern =
+    /^\d{1,2}\/\d{1,2}\/\d{4},\s\d{1,2}:\d{2}:\d{2}\s[AP]M$/;
+  return usLocalePattern.test(dateString) ? "true" : "false";
+}
+
+export function isCompatibleDateStrings(string1: any, string2: any): boolean {
+  return string1 && string2 && string1.toString() !== string2.toString();
 }

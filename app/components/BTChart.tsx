@@ -17,19 +17,20 @@ import {
 import Spinner from "./Spinner";
 import {
   fetchBitcoinData,
-  transformData,
-  unixStart,
-  unixStop,
+  isCompatibleDateStrings,
+  isUSLocaleFormat,
+  transformData
 } from "~/lib/data";
 import { useEffect, useState } from "react";
 import { ChartObj } from "~/types/types";
+import { testdata } from "~/lib/testdata";
+import { DateRange } from "react-day-picker";
 
-
-export function BTChart({value_obj}: {value_obj: ChartObj| undefined}) {
-  const [bitcoinData, setBitcoinData] = useState(null);
+export function BTChart({ value_obj, date_picker }: { value_obj: ChartObj | undefined, date_picker: DateRange | undefined }) {
+  const [bitcoinData, setBitcoinData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const chartConfig = {
     assetprice: {
       label: value_obj?.value || "bitcoin",
@@ -41,8 +42,17 @@ export function BTChart({value_obj}: {value_obj: ChartObj| undefined}) {
     async function loadBitcoinData() {
       try {
         const apiKey = import.meta.env.VITE_PUBLIC_API_KEY;
-        const data = await fetchBitcoinData(apiKey, value_obj?.value || "bitcoin");
-        setBitcoinData(data);
+        //const isDev = import.meta.env.DEV;
+        const isDev = false;
+        if (isDev) {
+          setBitcoinData(testdata);
+        } else {
+          const data = await fetchBitcoinData(
+            apiKey,
+            value_obj?.value || "bitcoin", date_picker
+          );
+          setBitcoinData(data);
+        }
       } catch (err) {
         setError("Failed to fetch Bitcoin data");
         console.error(err);
@@ -50,9 +60,11 @@ export function BTChart({value_obj}: {value_obj: ChartObj| undefined}) {
         setIsLoading(false);
       }
     }
+    if (value_obj?.value && isCompatibleDateStrings(date_picker?.from, date_picker?.to)) {
 
-    loadBitcoinData();
-  }, [value_obj]);
+      loadBitcoinData();
+    }
+  }, [value_obj, date_picker]);
 
   if (isLoading)
     return (
@@ -63,7 +75,7 @@ export function BTChart({value_obj}: {value_obj: ChartObj| undefined}) {
   if (error) return <div>Error: {error}</div>;
   if (!bitcoinData) return <div>No data available</div>;
   return (
-    <Card className="m-8 max-h-300px">
+    <Card className="mx-8 my-2 max-h-300px">
       <CardHeader>
         <CardTitle>Asset Chart Historical</CardTitle>
         <CardDescription>
@@ -89,8 +101,8 @@ export function BTChart({value_obj}: {value_obj: ChartObj| undefined}) {
               tickMargin={1}
               tickFormatter={(value) => value.slice(0, 3)}
               label={{
-                value: "day"
-              }}              
+                value: "day",
+              }}
             />
             <ChartTooltip
               cursor={false}
@@ -113,9 +125,7 @@ export function BTChart({value_obj}: {value_obj: ChartObj| undefined}) {
               {value_obj?.label || "BTC"} Price
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              {`${new Date(+unixStart * 1000).toLocaleString()} - ${new Date(
-                +unixStop * 1000
-              ).toLocaleString()}`}
+              {`${date_picker?.from?.toLocaleString() || new Date()} - ${date_picker?.to?.toLocaleString() || new Date()}`}
             </div>
           </div>
         </div>
