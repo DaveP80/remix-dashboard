@@ -39,6 +39,14 @@ const assets = [
     value: "binancecoin",
     label: "BNB",
   },
+  {
+    value: "dogecoin",
+    label: "DOGE",
+  },
+  {
+    value: "avalanche-2",
+    label: "AVAX",
+  }
 ]
 
 export function ChartSelector() {
