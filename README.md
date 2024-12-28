@@ -43,3 +43,7 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 
 `utils/schema.sql` has supabase create table statements.
 <details>author david paquette</details>
+
+## Crypto Price Data/Api
+
+Data and API calls go to the coingecko API, developer API module.

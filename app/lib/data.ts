@@ -31,7 +31,7 @@ export function transformData(
     }
     if (inner_c == 24 || (flag && i == l - 1)) {
       storObj["day"] = (day + 1).toString();
-      storObj["btcprice"] = +max_p.toFixed();
+      storObj["assetprice"] = +max_p.toFixed();
       finalArr.push(storObj);
       day++;
       inner_c = 0;
@@ -44,7 +44,7 @@ export function transformData(
   return finalArr;
 }
 
-export async function fetchBitcoinData(environ: string | undefined) {
+export async function fetchBitcoinData(environ: string | undefined, value: string) {
   const options: { [key: string]: any } = {
     method: "GET",
     headers: {
@@ -55,7 +55,7 @@ export async function fetchBitcoinData(environ: string | undefined) {
 
   try {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${unixStart}&to=${unixStop}&precision=0`,
+      `https://api.coingecko.com/api/v3/coins/${value}/market_chart/range?vs_currency=usd&from=${unixStart}&to=${unixStop}&precision=0`,
       options
     );
     return await response.json();
