@@ -2,6 +2,7 @@
 import { addDays } from "date-fns";
 import { createContext, useState } from "react";
 import { DateRange } from "react-day-picker";
+import { getDateOneYearAgo } from "~/lib/data";
 import type { ChartObj, User, UserContextType } from "~/types/types";
 
 export const GlobalContext = createContext<UserContextType>(undefined);
@@ -17,9 +18,13 @@ export default function GlobalContextProvider({
     value: "bitcoin",
     label: "BTC",
   });
-  const [date, setDate] = useState<DateRange>({
-    from: new Date(2024, 0, 1),
-    to: addDays(new Date(2024, 0, 1), 20),
+  const [date, setDate] = useState<DateRange>(() => {
+    let f = getDateOneYearAgo();
+    return {
+      from: f,
+      to: addDays(f, 20),
+
+    }
   });
 
   const clearUser = () => setUser({ name: null });

@@ -16,6 +16,7 @@ export function transformData(
 ): TransformArrayObject[] {
   const initData = args.prices;
   const finalArr: TransformArrayObject[] = [];
+  let avg_marketcap: number = 0;
   //find highest price in every 24 part window. if remaining window is less
   //then the length of 24, find the highest in what is remaining.
   let l = initData.length;
@@ -31,14 +32,17 @@ export function transformData(
     if (initData[i][1] > max_p) {
       max_p = initData[i][1];
     }
+    avg_marketcap += initData[i][0];
     if (inner_c == 24 || (flag && i == l - 1)) {
       storObj["day"] = (day + 1).toString();
       storObj["assetprice"] = +max_p.toFixed();
+      storObj["average_marketcap"] = flag ? avg_marketcap / l-1-i : avg_marketcap / 24;
       finalArr.push(storObj);
       day++;
       inner_c = 0;
       storObj = {};
       max_p = Number.MIN_SAFE_INTEGER;
+      avg_marketcap = 0;
       continue;
     }
     inner_c++;
@@ -89,4 +93,9 @@ export function isUSLocaleFormat(dateString: string): string {
 
 export function isCompatibleDateStrings(string1: any, string2: any): boolean {
   return string1 && string2 && string1.toString() !== string2.toString();
+}
+
+export function getDateOneYearAgo(): Date {
+  const today = new Date();
+  return new Date(today.setDate(today.getDate() - 365));
 }
