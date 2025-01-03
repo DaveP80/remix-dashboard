@@ -1,10 +1,12 @@
 import {
+  Link,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import type {
   LinksFunction,
@@ -22,6 +24,7 @@ import {
   useTheme,
 } from "remix-themes";
 import { themeSessionResolver } from "./sessions.server";
+import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -45,6 +48,26 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     theme: getTheme(),
   };
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        {/* add the UI you want your users to see */}
+        <ExclamationTriangleIcon/>
+        <Link to="/auth/user-page">Go to User Page</Link>
+        <Scripts />
+      </body>
+    </html>
+  );
 }
 
 export default function AppWithProviders() {

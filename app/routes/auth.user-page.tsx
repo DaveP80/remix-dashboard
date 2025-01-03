@@ -15,9 +15,9 @@ export default function UserPage() {
     return (
       <div>
         <div className="text-xl font-bold">Welcome back {user?.name}</div>
-        <ChartSelector/>
-        <DatePickerWRange/>
-        <BTChart value_obj={ChartContext?.value_obj} date_picker={ChartContext?.date}/>
+        <ChartSelector />
+        <DatePickerWRange />
+        <BTChart value_obj={ChartContext?.value_obj} date_picker={ChartContext?.date} summary_view={null} />
       </div>
     );
   }

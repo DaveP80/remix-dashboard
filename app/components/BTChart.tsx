@@ -18,18 +18,22 @@ import Spinner from "./Spinner";
 import {
   fetchBitcoinData,
   isCompatibleDateStrings,
-  isUSLocaleFormat,
   transformData
 } from "~/lib/data";
 import { useEffect, useState } from "react";
 import { ChartObj } from "~/types/types";
 import { testdata } from "~/lib/testdata";
 import { DateRange } from "react-day-picker";
+import { Button } from "./ui/button";
+import { Form, useLocation, useNavigate, useNavigation } from "@remix-run/react";
 
-export function BTChart({ value_obj, date_picker }: { value_obj: ChartObj | undefined, date_picker: DateRange | undefined }) {
+export function BTChart({ value_obj, date_picker, summary_view }: { value_obj: ChartObj | undefined, date_picker: DateRange | undefined, summary_view: any }) {
   const [bitcoinData, setBitcoinData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const chartConfig = {
     assetprice: {
@@ -47,11 +51,16 @@ export function BTChart({ value_obj, date_picker }: { value_obj: ChartObj | unde
         if (isDev) {
           setBitcoinData(testdata);
         } else {
-          const data = await fetchBitcoinData(
-            apiKey,
-            value_obj?.value || "bitcoin", date_picker
-          );
-          setBitcoinData(data);
+          if (summary_view) {
+            console.log("using storage")
+            setBitcoinData(summary_view);
+          } else {
+            const data = await fetchBitcoinData(
+              apiKey,
+              value_obj?.value || "bitcoin", date_picker
+            );
+            setBitcoinData(data);
+          }
         }
       } catch (err) {
         setError("Failed to fetch Bitcoin data");
@@ -66,6 +75,11 @@ export function BTChart({ value_obj, date_picker }: { value_obj: ChartObj | unde
     }
   }, [value_obj, date_picker]);
 
+  const handleButton = () => {
+    setButtonLoading(true);
+    navigate(`/auth/crypto/${value_obj?.label}`)
+  }
+
   if (isLoading)
     return (
       <div>
@@ -74,6 +88,8 @@ export function BTChart({ value_obj, date_picker }: { value_obj: ChartObj | unde
     );
   if (error) return <div>Error: {error}</div>;
   if (!bitcoinData) return <div>No data available</div>;
+
+  const allChartData = summary_view ? bitcoinData : transformData(bitcoinData);
   return (
     <Card className="mx-8 my-2 max-h-300px">
       <CardHeader>
@@ -81,13 +97,28 @@ export function BTChart({ value_obj, date_picker }: { value_obj: ChartObj | unde
         <CardDescription>
           Showing Daily High {value_obj?.value || "bitcoin"} prices.
           <details className="detail">hourly intervals in data set</details>
+          {
+            !location.pathname.includes("crypto") && (
+              <Form method="post" action={`/auth/crypto/${value_obj?.label}`}>
+                <input type="hidden" name="chart_data" value={JSON.stringify(allChartData)} />
+                <Button onClick={handleButton}><>{
+                  buttonLoading ? <Spinner h={""} />
+                    :
+                    "Get AI summary"
+                }
+                </></Button>
+
+              </Form>
+
+            )
+          }
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
-            data={transformData(bitcoinData)}
+            data={allChartData}
             margin={{
               left: 12,
               right: 12,
